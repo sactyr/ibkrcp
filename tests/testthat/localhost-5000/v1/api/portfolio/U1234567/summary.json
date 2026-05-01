@@ -1,0 +1,17 @@
+{
+  "totalcashvalue": {
+    "amount": 10000.00,
+    "currency": "AUD",
+    "isNull": false
+  },
+  "netliquidation": {
+    "amount": 25000.00,
+    "currency": "AUD",
+    "isNull": false
+  },
+  "availablefunds": {
+    "amount": 8000.00,
+    "currency": "AUD",
+    "isNull": false
+  }
+}

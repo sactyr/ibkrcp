@@ -1,0 +1,12 @@
+[
+  {
+    "conid": 12345,
+    "contractDesc": "VGS.AX",
+    "position": 100,
+    "mktPrice": 120.50,
+    "mktValue": 12050.00,
+    "avgCost": 115.00,
+    "unrealizedPnl": 550.00,
+    "currency": "AUD"
+  }
+]
