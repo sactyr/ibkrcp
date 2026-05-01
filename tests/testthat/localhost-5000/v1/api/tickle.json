@@ -1,0 +1,10 @@
+{
+  "session": "abc123",
+  "iserver": {
+    "authStatus": {
+      "authenticated": true,
+      "competing": false,
+      "connected": false
+    }
+  }
+}
