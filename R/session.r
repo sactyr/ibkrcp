@@ -33,7 +33,7 @@ ibkr_auth_status <- function() {
 #' Reauthenticate the session
 #'
 #' Call this if the session has timed out but the gateway is still running.
-#' After calling this function, wait a few seconds then call [ibkr_tickle()]
+#' After calling this function, wait a few seconds then call `ibkr_tickle()`
 #' to confirm the session is restored.
 #'
 #' @return Invisibly returns the response list

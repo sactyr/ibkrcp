@@ -31,7 +31,7 @@ ibkr_get_orders <- function() {
 #'
 #' Places a DAY market order for a single instrument. Confirmation prompts
 #' returned by the API (e.g. price deviation warnings) are handled
-#' automatically via [ibkr_confirm_order_messages()].
+#' automatically via `ibkr_confirm_order_messages()`.
 #'
 #' @param account_id IBKR account ID string (e.g. `"U1234567"`)
 #' @param conid Integer conid of the instrument
@@ -73,8 +73,8 @@ ibkr_place_order <- function(account_id, conid, side, quantity) {
 #'
 #' After placing an order, IBKR may return one or more confirmation prompts
 #' (e.g. price deviation warnings, regulatory notices). This function
-#' automatically confirms each prompt in sequence. Called internally by
-#' [ibkr_place_order()].
+#' automatically confirms each prompt in sequence. #' Called internally by
+#' `ibkr_place_order()`.
 #'
 #' @param resp Response list from the place order POST
 #' @return Final response after all messages are confirmed
@@ -98,7 +98,7 @@ ibkr_confirm_order_messages <- function(resp) {
 #' Cancel an open order
 #'
 #' @param account_id IBKR account ID string
-#' @param order_id Order ID to cancel (as returned by [ibkr_get_orders()])
+#' @param order_id Order ID to cancel (as returned by `ibkr_get_orders()`)
 #' @return Invisibly returns the response list
 #' @export
 ibkr_cancel_order <- function(account_id, order_id) {

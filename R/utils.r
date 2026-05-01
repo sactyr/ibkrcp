@@ -1,3 +1,7 @@
+#' @importFrom httr2 request req_options req_headers req_url_query
+#' @importFrom httr2 req_body_json req_perform resp_status resp_body_string resp_body_json
+#' @importFrom jsonlite fromJSON
+NULL
 IBKR_BASE_URL <- "https://localhost:5000/v1/api"
 
 #' Make a GET request to the IBKR Client Portal API
