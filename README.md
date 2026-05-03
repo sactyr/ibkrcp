@@ -99,6 +99,18 @@ requests (`ssl_verifypeer = FALSE`, `ssl_verifyhost = FALSE`). This is
 intentional — verifying SSL against localhost is not meaningful — and
 follows IBKR’s own API guidance.
 
+## Scope and roadmap
+
+`ibkrcp` 0.1.0 covers the endpoints needed for a basic automated trading
+workflow: session management, account queries, market data, and order
+management. The Interactive Brokers Client Portal API is significantly
+broader than what is currently wrapped — real-time streaming, additional
+order types, transaction history, and more remain as future work.
+
+Contributions are welcome. If there’s an endpoint you need that isn’t
+covered, please open an issue or submit a pull request on
+[GitHub](https://github.com/sactyr/ibkrcp).
+
 ## Related
 
 - [IBKR Client Portal API
