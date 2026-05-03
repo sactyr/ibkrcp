@@ -1,0 +1,17 @@
+[
+  {
+    "exchange": "ASX",
+    "schedules": [
+      {
+        "tradingScheduleDate": "20260504",
+        "sessions": [
+          { "openingTime": "100000", "closingTime": "160000" }
+        ]
+      },
+      {
+        "tradingScheduleDate": "20260505",
+        "sessions": []
+      }
+    ]
+  }
+]

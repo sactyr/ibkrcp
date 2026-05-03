@@ -7,47 +7,101 @@
 
 <!-- badges: end -->
 
-The goal of ibkrcp is to …
+`ibkrcp` is a lightweight R client for the [Interactive Brokers Client
+Portal REST API](https://ibkrcampus.com/campus/ibkr-api-page/cpapi-v1/).
+It covers session management, account and portfolio queries, market data
+retrieval, and order placement and cancellation.
+
+## Prerequisites
+
+`ibkrcp` communicates with the IBKR Client Portal Gateway, a lightweight
+Java process that must be running locally before any function calls are
+made. The gateway exposes the REST API on `https://localhost:5000`.
+
+1.  Download the Client Portal Gateway from the [IBKR API
+    page](https://ibkrcampus.com/campus/ibkr-api-page/cpapi-v1/#client-portal-gw)
+2.  Start the gateway: `java -jar root/run.jar root/conf.yaml`
+3.  Log in via the browser prompt at `https://localhost:5000`
+4.  Confirm the session is live before trading
 
 ## Installation
 
-You can install the development version of ibkrcp from
-[GitHub](https://github.com/) with:
+Install the development version from GitHub:
 
 ``` r
 # install.packages("pak")
 pak::pak("sactyr/ibkrcp")
 ```
 
-## Example
+## Usage
 
-This is a basic example which shows you how to solve a common problem:
+### Session management
 
 ``` r
 library(ibkrcp)
-## basic example code
+
+# Confirm the gateway is running and authenticated
+ibkr_tickle()
+
+# Check authentication status
+ibkr_auth_status()
+
+# Re-authenticate if the session has timed out
+ibkr_reauthenticate()
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+### Account and portfolio
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+# Get all accounts
+accounts <- ibkr_get_accounts()
+account_id <- accounts$account_id[1]
+
+# Portfolio summary (cash balances, net liquidation, etc.)
+ibkr_get_summary(account_id)
+
+# Current open positions
+ibkr_get_positions(account_id)
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+### Market data
 
-You can also embed plots, for example:
+``` r
+# Look up a contract ID (conid) by symbol
+contracts <- ibkr_search_contracts("VGS")
+conid <- contracts$conid[contracts$company_header == "VGS - ASX"]
 
-<img src="man/figures/README-pressure-1.png" alt="" width="100%" />
+# OHLCV price history (daily bars, 1 year)
+prices <- ibkr_get_price_history(conid, period = "1y")
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+# ASX trading schedule (trading days, public holidays)
+schedule <- ibkr_get_trading_schedule(symbol = "VGS", exchange = "ASX")
+```
+
+### Orders
+
+``` r
+# Place a market order
+ibkr_place_order(account_id, conid, side = "BUY", quantity = 10)
+
+# View open orders
+ibkr_get_orders()
+
+# Cancel an order
+ibkr_cancel_order(account_id, order_id = "1001")
+```
+
+## SSL note
+
+The Client Portal Gateway runs on localhost with a self-signed
+certificate. `ibkrcp` disables SSL peer and host verification for all
+requests (`ssl_verifypeer = FALSE`, `ssl_verifyhost = FALSE`). This is
+intentional — verifying SSL against localhost is not meaningful — and
+follows IBKR’s own API guidance.
+
+## Related
+
+- [IBKR Client Portal API
+  documentation](https://ibkrcampus.com/campus/ibkr-api-page/cpapi-v1/)
+- [IBKR Client Portal Gateway
+  download](https://ibkrcampus.com/campus/ibkr-api-page/cpapi-v1/#client-portal-gw)

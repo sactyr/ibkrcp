@@ -1,0 +1,191 @@
+---
+title: "Getting started with ibkrcp"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with ibkrcp}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+## Overview
+
+`ibkrcp` provides a lightweight R interface to the [Interactive Brokers Client Portal REST API](https://ibkrcampus.com/campus/ibkr-api-page/cpapi-v1/). It covers the four areas you need for programmatic trading:
+
+- Session management (authenticate, keepalive, re-authenticate)
+- Account and portfolio queries (balances, positions)
+- Market data (contract lookup, price history, trading schedule)
+- Order management (place, inspect, cancel)
+
+## Prerequisites
+
+`ibkrcp` communicates with the IBKR Client Portal Gateway — a lightweight Java process that must be running locally and authenticated before any function in this package will work.
+
+**Setup steps:**
+
+1. Download the Client Portal Gateway from the [IBKR API page](https://ibkrcampus.com/campus/ibkr-api-page/cpapi-v1/#client-portal-gw)
+2. Unzip and start the gateway from a terminal:
+   ```
+   java -jar root/run.jar root/conf.yaml
+   ```
+3. Open `https://localhost:5000` in your browser and log in with your IBKR credentials
+4. Confirm the session is live before making any API calls
+
+The gateway exposes the REST API on `https://localhost:5000` and uses a self-signed certificate. `ibkrcp` disables SSL verification for all requests — this is intentional and necessary for localhost communication.
+
+Sessions time out after approximately 5 minutes without activity. Call `ibkr_tickle()` regularly to keep the session alive.
+
+## Installation
+
+```{r install}
+# install.packages("pak")
+pak::pak("sactyr/ibkrcp")
+```
+
+## A complete trading workflow
+
+The sections below walk through a full end-to-end workflow: starting the session, finding an instrument, fetching price history, and placing an order.
+
+### 1. Session management
+
+Always start by confirming the gateway is running and authenticated:
+
+```{r session}
+library(ibkrcp)
+
+# Verify the session is alive and authenticated — stops with an error if not
+ibkr_tickle()
+
+# Check the raw authentication status
+ibkr_auth_status()
+```
+
+If the session has timed out but the gateway is still running, re-authenticate without restarting the gateway:
+
+```{r reauth}
+ibkr_reauthenticate()
+Sys.sleep(3)       # wait a few seconds for the session to restore
+ibkr_tickle()      # confirm it is back
+```
+
+### 2. Account and portfolio
+
+```{r accounts}
+# List all accounts associated with your login
+accounts <- ibkr_get_accounts()
+accounts
+#>   account_id      type currency           alias
+#> 1   U1234567 INDIVIDUAL      AUD Paper Trading
+
+account_id <- accounts$account_id[1]
+
+# High-level portfolio summary: cash, net liquidation, available funds
+ibkr_get_summary(account_id)
+
+# Current open positions
+positions <- ibkr_get_positions(account_id)
+positions
+#>       conid symbol position mkt_price mkt_value avg_cost unrealised_pnl currency
+#> 1 123456789 VGS.AX      100    120.50     12050   115.00            550      AUD
+```
+
+### 3. Finding a contract ID
+
+IBKR identifies every instrument by a numeric contract ID (conid). Use `ibkr_search_contracts()` to find the conid for an ASX-listed ETF:
+
+```{r search}
+contracts <- ibkr_search_contracts("VGS")
+contracts
+#>       conid symbol                                  company_name description company_header
+#> 1 123456789    VGS  Vanguard MSCI Index International Shares ETF    ASX:VGS    VGS - ASX
+
+# Filter to ASX listing
+conid <- contracts$conid[grepl("ASX", contracts$company_header)]
+```
+
+### 4. Market data
+
+#### Price history
+
+```{r prices}
+# Daily OHLCV bars for the past year
+prices <- ibkr_get_price_history(conid, period = "1y")
+head(prices)
+#>         date   open   high    low  close volume
+#> 1 2025-05-01 119.00 121.00 118.50 120.50  50000
+#> 2 2025-05-02 120.50 122.00 119.80 121.30  48000
+
+# Available period strings: "1m", "3m", "6m", "1y", "2y", "3y", "5y"
+prices_3m <- ibkr_get_price_history(conid, period = "3m")
+```
+
+#### Trading schedule
+
+Use the trading schedule to distinguish trading days from public holidays before submitting orders:
+
+```{r schedule}
+schedule <- ibkr_get_trading_schedule(symbol = "VGS", exchange = "ASX")
+head(schedule)
+#>         date is_trading                 sessions
+#> 1 2026-05-04       TRUE 100000-160000
+#> 2 2026-05-05      FALSE              <NA>
+
+# Trading days only
+trading_days <- schedule[schedule$is_trading, "date"]
+```
+
+### 5. Order management
+
+#### Placing an order
+
+`ibkr_place_order()` places a DAY market order and automatically handles any confirmation prompts returned by the API:
+
+```{r place}
+ibkr_place_order(
+  account_id = account_id,
+  conid      = conid,
+  side       = "BUY",
+  quantity   = 10
+)
+#> Order placed: BUY 10 shares (conid 123456789) for account U1234567
+```
+
+#### Inspecting open orders
+
+```{r orders}
+orders <- ibkr_get_orders()
+orders
+#>   order_id     conid symbol side order_type quantity    status
+#> 1     1001 123456789 VGS.AX  BUY        MKT       10 Submitted
+```
+
+#### Cancelling an order
+
+```{r cancel}
+ibkr_cancel_order(account_id, order_id = "1001")
+#> Order 1001 cancelled for account U1234567
+```
+
+## Function reference
+
+| Function | Description |
+|---|---|
+| `ibkr_tickle()` | Confirm session is alive and authenticated |
+| `ibkr_auth_status()` | Get raw authentication status |
+| `ibkr_reauthenticate()` | Request session re-authentication |
+| `ibkr_get_accounts()` | List all accounts |
+| `ibkr_get_summary()` | Portfolio summary for an account |
+| `ibkr_get_positions()` | Open positions for an account |
+| `ibkr_search_contracts()` | Search for contracts by symbol |
+| `ibkr_get_price_history()` | Daily OHLCV price history |
+| `ibkr_get_trading_schedule()` | Exchange trading schedule |
+| `ibkr_place_order()` | Place a market order |
+| `ibkr_get_orders()` | List open orders |
+| `ibkr_cancel_order()` | Cancel an open order |
