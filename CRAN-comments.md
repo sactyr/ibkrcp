@@ -1,6 +1,15 @@
+## Resubmission
+
+This is a resubmission. The following notes from the initial pre-check have 
+been addressed:
+
+* "Possibly misspelled words: IBKR" — IBKR is the well-known ticker/abbreviation
+  for Interactive Brokers. Added to inst/WORDLIST via spelling package.
+* "Non-standard file: CRAN-comments.md" — added to .Rbuildignore.
+
 ## R CMD check results
 
-0 errors | 0 warnings | 0 notes
+0 errors | 0 warnings | 0 notes (locally)
 
 ## Test environments
 
