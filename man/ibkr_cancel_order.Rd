@@ -9,7 +9,7 @@ ibkr_cancel_order(account_id, order_id)
 \arguments{
 \item{account_id}{IBKR account ID string}
 
-\item{order_id}{Order ID to cancel (as returned by \code{ibkr_get_orders()})}
+\item{order_id}{Order ID to cancel (as returned by \code{ibkr_live_orders()})}
 }
 \value{
 Invisibly returns the response list

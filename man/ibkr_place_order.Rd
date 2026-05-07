@@ -21,5 +21,5 @@ Invisibly returns the final order response list
 \description{
 Places a DAY market order for a single instrument. Confirmation prompts
 returned by the API (e.g. price deviation warnings) are handled
-automatically via \code{ibkr_confirm_order_messages()}.
+automatically via \code{ibkr_reply_order()}.
 }

@@ -3,7 +3,7 @@
 #' @return Data frame with one row per account and columns: `account_id`,
 #'   `type`, `currency`, `alias`
 #' @export
-ibkr_get_accounts <- function() {
+ibkr_portfolio_accounts <- function() {
   resp <- ibkr_get("/portfolio/accounts")
 
   do.call(rbind, lapply(resp, function(a) {
@@ -27,19 +27,26 @@ ibkr_get_accounts <- function() {
 #' @return Named list of summary fields. Each field is itself a list containing
 #'   `amount`, `currency`, and `isNull`
 #' @export
-ibkr_get_summary <- function(account_id) {
+ibkr_portfolio_summary <- function(account_id) {
   ibkr_get(sprintf("/portfolio/%s/summary", account_id))
 }
 
 #' Get current positions for an account
 #'
 #' @param account_id IBKR account ID string
+#' @param sort Field to sort by (default: `"position"`). Other valid values:
+#'   `"conid"`, `"contractDesc"`, `"mktValue"`, `"unrealizedPnl"`
+#' @param direction Sort direction: `"a"` for ascending (default), `"d"` for
+#'   descending
 #' @return Data frame with one row per position and columns: `conid`, `symbol`,
 #'   `position`, `mkt_price`, `mkt_value`, `avg_cost`, `unrealised_pnl`,
 #'   `currency`. Returns an empty data frame if no positions are open.
 #' @export
-ibkr_get_positions <- function(account_id) {
-  resp <- ibkr_get(sprintf("/portfolio/%s/positions/0", account_id))
+ibkr_portfolio_positions <- function(account_id, sort = "position", direction = "a") {
+  resp <- ibkr_get(
+    sprintf("/portfolio2/%s/positions", account_id),
+    params = list(sort = sort, direction = direction)
+  )
 
   if (length(resp) == 0) {
     message("No open positions found for account ", account_id)
@@ -49,7 +56,7 @@ ibkr_get_positions <- function(account_id) {
   do.call(rbind, lapply(resp, function(pos) {
     data.frame(
       conid          = pos$conid,
-      symbol         = pos$contractDesc,
+      symbol         = pos$description,
       position       = pos$position,
       mkt_price      = pos$mktPrice,
       mkt_value      = pos$mktValue,

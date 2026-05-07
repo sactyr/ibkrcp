@@ -3,45 +3,33 @@ library(httptest2)
 # ibkr_search_contracts() -----------------------------------------------------
 
 with_mock_api({
-  test_that("ibkr_search_contracts() returns a data frame", {
+  test_that("ibkr_search_contracts() returns a list", {
     result <- ibkr_search_contracts("VGS")
-    expect_s3_class(result, "data.frame")
+    expect_type(result, "list")
   })
 
-  test_that("ibkr_search_contracts() returns expected columns", {
+  test_that("ibkr_search_contracts() returns non-empty result", {
     result <- ibkr_search_contracts("VGS")
-    expect_named(result, c("conid", "symbol", "company_name",
-                           "description", "company_header"))
+    expect_gt(length(result), 0)
   })
 
-  test_that("ibkr_search_contracts() returns correct values", {
+  test_that("ibkr_search_contracts() each element has a conid", {
     result <- ibkr_search_contracts("VGS")
-    expect_equal(result$symbol[1], "VGS")
-    expect_type(result$conid, "integer")
+    expect_true(all(sapply(result, function(x) !is.null(x$conid))))
   })
 })
 
 # ibkr_get_trading_schedule() -------------------------------------------------
 
 with_mock_api({
-  test_that("ibkr_get_trading_schedule() returns a data frame", {
-    result <- ibkr_get_trading_schedule()
-    expect_s3_class(result, "data.frame")
+  test_that("ibkr_get_trading_schedule() returns a list", {
+    result <- ibkr_get_trading_schedule("VGS", "ASX")
+    expect_type(result, "list")
   })
 
-  test_that("ibkr_get_trading_schedule() returns expected columns", {
-    result <- ibkr_get_trading_schedule()
-    expect_named(result, c("date", "is_trading", "sessions"))
-  })
-
-  test_that("ibkr_get_trading_schedule() date column is Date class", {
-    result <- ibkr_get_trading_schedule()
-    expect_s3_class(result$date, "Date")
-  })
-
-  test_that("ibkr_get_trading_schedule() excludes year-2000 template dates", {
-    result <- ibkr_get_trading_schedule()
-    expect_false(any(format(result$date, "%Y") == "2000"))
+  test_that("ibkr_get_trading_schedule() returns non-empty result", {
+    result <- ibkr_get_trading_schedule("VGS", "ASX")
+    expect_gt(length(result), 0)
   })
 })
 

@@ -1,11 +1,18 @@
 #' Get all live and open orders
 #'
+#' @param filters Optional character vector of order status filters (e.g.
+#'   `c("Filled", "Cancelled")`)
+#' @param force If `TRUE`, forces a fresh fetch bypassing the cache
+#'   (default: `FALSE`)
 #' @return Data frame with one row per order and columns: `order_id`, `conid`,
 #'   `symbol`, `side`, `order_type`, `quantity`, `status`. Returns an empty
 #'   data frame if no open orders exist.
 #' @export
-ibkr_get_orders <- function() {
-  resp <- ibkr_get("/iserver/orders")
+ibkr_live_orders <- function(filters = NULL, force = FALSE) {
+  params <- list(force = force)
+  if (!is.null(filters)) params$filters <- paste(filters, collapse = ",")
+
+  resp <- ibkr_get("/iserver/account/orders", params = params)
   orders <- resp$orders
 
   if (is.null(orders) || length(orders) == 0) {
@@ -31,7 +38,7 @@ ibkr_get_orders <- function() {
 #'
 #' Places a DAY market order for a single instrument. Confirmation prompts
 #' returned by the API (e.g. price deviation warnings) are handled
-#' automatically via `ibkr_confirm_order_messages()`.
+#' automatically via `ibkr_reply_order()`.
 #'
 #' @param account_id IBKR account ID string (e.g. `"U1234567"`)
 #' @param conid Integer conid of the instrument
@@ -59,7 +66,7 @@ ibkr_place_order <- function(account_id, conid, side, quantity) {
     )
   )
 
-  resp <- ibkr_confirm_order_messages(resp)
+  resp <- ibkr_reply_order(resp)
 
   message(sprintf(
     "Order placed: %s %d shares (conid %d) for account %s",
@@ -69,17 +76,17 @@ ibkr_place_order <- function(account_id, conid, side, quantity) {
   invisible(resp)
 }
 
-#' Confirm order reply messages returned by IBKR
+#' Reply to order confirmation messages returned by IBKR
 #'
 #' After placing an order, IBKR may return one or more confirmation prompts
 #' (e.g. price deviation warnings, regulatory notices). This function
-#' automatically confirms each prompt in sequence. #' Called internally by
-#' `ibkr_place_order()`.
+#' automatically confirms each prompt in sequence.
+#' Called internally by `ibkr_place_order()`.
 #'
 #' @param resp Response list from the place order POST
 #' @return Final response after all messages are confirmed
 #' @noRd
-ibkr_confirm_order_messages <- function(resp) {
+ibkr_reply_order <- function(resp) {
   while (
     is.list(resp) && length(resp) > 0 &&
     is.list(resp[[1]]) &&
@@ -98,7 +105,7 @@ ibkr_confirm_order_messages <- function(resp) {
 #' Cancel an open order
 #'
 #' @param account_id IBKR account ID string
-#' @param order_id Order ID to cancel (as returned by `ibkr_get_orders()`)
+#' @param order_id Order ID to cancel (as returned by `ibkr_live_orders()`)
 #' @return Invisibly returns the response list
 #' @export
 ibkr_cancel_order <- function(account_id, order_id) {
