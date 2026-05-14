@@ -1,3 +1,10 @@
+# ibkrcp 0.1.2
+
+* Fixed field name mappings in `ibkr_portfolio_positions()` for the `/portfolio2/` 
+  endpoint (`description`, `marketPrice`, `marketValue`).
+* Added null-safe coalescing for all position fields to prevent data frame 
+  construction errors when optional fields are absent.
+  
 # ibkrcp 0.1.1
 
 * `ibkr_search_contracts()`: fixed incorrect HTTP method (GET → POST) to match
