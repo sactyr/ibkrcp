@@ -2,7 +2,7 @@ Package: ibkrcp
 Title: R Client for the Interactive Brokers Client Portal API
 Version: 0.1.2
 Authors@R:
-    person("Nagappan", "Karuppiah", , "sactyr@gmail.com", role = c("aut", "cre"))
+    person("Nagappan", "Karuppiah", , "ibkrcp@gmail.com", role = c("aut", "cre"))
 Description: Provides a lightweight R interface to the Interactive Brokers (IBKR)
     Client Portal REST API. Functions cover session management, account and portfolio
     queries, market data retrieval, and order placement and cancellation. Requires a
