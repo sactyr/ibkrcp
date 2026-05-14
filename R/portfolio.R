@@ -55,14 +55,14 @@ ibkr_portfolio_positions <- function(account_id, sort = "position", direction = 
 
   do.call(rbind, lapply(resp, function(pos) {
     data.frame(
-      conid          = pos$conid,
-      symbol         = pos$description,
-      position       = pos$position,
-      mkt_price      = pos$mktPrice,
-      mkt_value      = pos$mktValue,
-      avg_cost       = pos$avgCost,
-      unrealised_pnl = pos$unrealizedPnl,
-      currency       = pos$currency,
+      conid          = as.integer(pos$conid)   %||% NA_integer_,
+      symbol         = pos$description         %||% NA_character_,
+      position       = pos$position            %||% NA_real_,
+      mkt_price      = pos$marketPrice         %||% NA_real_,
+      mkt_value      = pos$marketValue         %||% NA_real_,
+      avg_cost       = pos$avgCost             %||% NA_real_,
+      unrealised_pnl = pos$unrealizedPnl       %||% NA_real_,
+      currency       = pos$currency            %||% NA_character_,
       stringsAsFactors = FALSE
     )
   }))
