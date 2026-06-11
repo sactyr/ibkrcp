@@ -25,3 +25,6 @@ httr2 requests. This is intentional and necessary: the Client Portal Gateway
 runs on localhost with a self-signed certificate, and SSL verification against
 localhost is not meaningful. This pattern is documented in IBKR's own API
 guidance.
+
+The maintainer email address has changed from sactyr@gmail.com to 
+ibkrcp@gmail.com. Both addresses belong to the same person (Nagappan Karuppiah)
