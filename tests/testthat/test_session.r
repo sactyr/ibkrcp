@@ -16,3 +16,11 @@ with_mock_api({
     expect_type(resp, "list")
   })
 })
+
+# ibkr_logout() ---------------------------------------------------------------
+
+with_mock_api({
+  test_that("ibkr_logout() returns invisibly", {
+    expect_invisible(ibkr_logout())
+  })
+})

@@ -19,3 +19,18 @@ ibkr_ping <- function() {
 ibkr_auth_status <- function() {
   ibkr_post("/iserver/auth/status")
 }
+
+
+#' Log out of the current session
+#'
+#' Cleanly terminates the authenticated Client Portal Gateway session. Useful
+#' for tearing down a session at the end of a scheduled run so it does not
+#' linger and conflict with a subsequent login.
+#'
+#' @return Invisibly returns the response list. The API returns a list with a
+#'   `confirmed` (or `status`) field indicating the logout succeeded.
+#' @export
+ibkr_logout <- function() {
+  resp <- ibkr_post("/logout")
+  invisible(resp)
+}

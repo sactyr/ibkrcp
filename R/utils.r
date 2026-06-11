@@ -1,6 +1,20 @@
 #' @importFrom httr2 request req_options req_headers req_url_query
 #' @importFrom httr2 req_body_json req_perform resp_status resp_body_string resp_body_json
 NULL
+
+#' Null-coalescing operator
+#'
+#' Returns `y` if `x` is `NULL`, otherwise `x`. Provided internally so the
+#' package does not require R >= 4.4.0 (where `%||%` entered base R) or an
+#' additional dependency on rlang.
+#'
+#' @param x,y Values to coalesce
+#' @return `x` if non-`NULL`, else `y`
+#' @noRd
+`%||%` <- function(x, y) {
+  if (is.null(x)) y else x
+}
+
 IBKR_BASE_URL <- "https://localhost:5000/v1/api"
 
 #' Make a GET request to the IBKR Client Portal API

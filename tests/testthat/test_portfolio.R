@@ -47,13 +47,17 @@ with_mock_api({
   test_that("ibkr_portfolio_positions() returns expected columns", {
     result <- ibkr_portfolio_positions("U1234567")
     expect_named(result, c("conid", "symbol", "position", "mkt_price",
-                           "mkt_value", "avg_cost", "unrealised_pnl", "currency"))
+                           "mkt_value", "avg_cost", "avg_price",
+                           "unrealised_pnl", "realised_pnl", "currency"))
   })
 
   test_that("ibkr_portfolio_positions() returns correct values", {
     result <- ibkr_portfolio_positions("U1234567")
-    expect_equal(result$symbol, "VGS.AX")
+    expect_equal(result$symbol, "VGS")
     expect_equal(result$position, 100)
+    expect_equal(result$mkt_price, 120.50)
+    expect_equal(result$avg_price, 115.00)
+    expect_equal(result$realised_pnl, 320.00)
   })
 })
 

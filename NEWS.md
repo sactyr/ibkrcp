@@ -1,10 +1,14 @@
 # ibkrcp 0.1.2
 
-* Fixed field name mappings in `ibkr_portfolio_positions()` for the `/portfolio2/` 
-  endpoint (`description`, `marketPrice`, `marketValue`).
-* Added null-safe coalescing for all position fields to prevent data frame 
-  construction errors when optional fields are absent.
-  
+* `ibkr_portfolio_positions()`: confirmed field name mappings against the
+  `/portfolio2/` endpoint (`description`, `marketPrice`, `marketValue`). Added
+  `avg_price` and `realised_pnl` columns. All position fields use null-safe
+  coalescing to prevent data frame construction errors when optional fields
+  are absent.
+* `ibkr_live_orders()`: added null-safe coalescing for all order fields, so a
+  missing field in a single order no longer errors the entire call.
+* Added `ibkr_logout()` to cleanly terminate an authenticated session.
+
 # ibkrcp 0.1.1
 
 * `ibkr_search_contracts()`: fixed incorrect HTTP method (GET → POST) to match

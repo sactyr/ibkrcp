@@ -22,13 +22,13 @@ ibkr_live_orders <- function(filters = NULL, force = FALSE) {
 
   do.call(rbind, lapply(orders, function(o) {
     data.frame(
-      order_id   = o$orderId,
-      conid      = o$conid,
-      symbol     = o$ticker,
-      side       = o$side,
-      order_type = o$orderType,
-      quantity   = o$totalSize,
-      status     = o$status,
+      order_id   = as.character(o$orderId %||% NA_character_),
+      conid      = o$conid     %||% NA_integer_,
+      symbol     = o$ticker    %||% NA_character_,
+      side       = o$side      %||% NA_character_,
+      order_type = o$orderType %||% NA_character_,
+      quantity   = o$totalSize %||% NA_real_,
+      status     = o$status    %||% NA_character_,
       stringsAsFactors = FALSE
     )
   }))

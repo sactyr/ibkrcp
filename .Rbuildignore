@@ -6,3 +6,4 @@
 ^\.claude$
 ^CRAN-SUBMISSION$
 ^CRAN-comments\.md$
+^ibkrcp-todo\.md$

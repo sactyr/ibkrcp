@@ -35,12 +35,13 @@ ibkr_portfolio_summary <- function(account_id) {
 #'
 #' @param account_id IBKR account ID string
 #' @param sort Field to sort by (default: `"position"`). Other valid values:
-#'   `"conid"`, `"contractDesc"`, `"mktValue"`, `"unrealizedPnl"`
+#'   `"conid"`, `"description"`, `"mktValue"`, `"unrealizedPnl"`
 #' @param direction Sort direction: `"a"` for ascending (default), `"d"` for
 #'   descending
 #' @return Data frame with one row per position and columns: `conid`, `symbol`,
-#'   `position`, `mkt_price`, `mkt_value`, `avg_cost`, `unrealised_pnl`,
-#'   `currency`. Returns an empty data frame if no positions are open.
+#'   `position`, `mkt_price`, `mkt_value`, `avg_cost`, `avg_price`,
+#'   `unrealised_pnl`, `realised_pnl`, `currency`. Returns an empty data frame
+#'   if no positions are open.
 #' @export
 ibkr_portfolio_positions <- function(account_id, sort = "position", direction = "a") {
   resp <- ibkr_get(
@@ -55,13 +56,15 @@ ibkr_portfolio_positions <- function(account_id, sort = "position", direction = 
 
   do.call(rbind, lapply(resp, function(pos) {
     data.frame(
-      conid          = as.integer(pos$conid)   %||% NA_integer_,
+      conid          = as.integer(pos$conid %||% NA_character_),
       symbol         = pos$description         %||% NA_character_,
       position       = pos$position            %||% NA_real_,
       mkt_price      = pos$marketPrice         %||% NA_real_,
       mkt_value      = pos$marketValue         %||% NA_real_,
       avg_cost       = pos$avgCost             %||% NA_real_,
+      avg_price      = pos$avgPrice            %||% NA_real_,
       unrealised_pnl = pos$unrealizedPnl       %||% NA_real_,
+      realised_pnl   = pos$realizedPnl         %||% NA_real_,
       currency       = pos$currency            %||% NA_character_,
       stringsAsFactors = FALSE
     )

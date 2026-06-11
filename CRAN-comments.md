@@ -1,11 +1,9 @@
-## Resubmission
+## Submission
 
-This is a resubmission. The following notes from the initial pre-check have 
-been addressed:
-
-* "Possibly misspelled words: IBKR" — IBKR is the well-known ticker/abbreviation
-  for Interactive Brokers. Added to inst/WORDLIST via spelling package.
-* "Non-standard file: CRAN-comments.md" — added to .Rbuildignore.
+This is a minor update (0.1.2). It fixes field mappings in
+`ibkr_portfolio_positions()`, hardens `ibkr_live_orders()` against missing
+optional fields, and adds one new function, `ibkr_logout()`, for cleanly
+terminating an authenticated session. See NEWS.md for the full list of changes.
 
 ## R CMD check results
 
