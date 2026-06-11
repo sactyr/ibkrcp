@@ -23,7 +23,7 @@ Java process that must be running locally before any function calls are
 made. The gateway exposes the REST API on `https://localhost:5000`.
 
 1.  Download the Client Portal Gateway from the [IBKR API
-    page](https://interactivebrokers.github.io/cpwebapi/quickstart)
+    page](https://www.interactivebrokers.com/campus/ibkr-api-page/cpapi-v1/)
 2.  Start the gateway: `bin/run.sh root/conf.yaml` (macOS/Linux) or
     `bin\run.bat root\conf.yaml` (Windows)
 3.  Log in via the browser prompt at `https://localhost:5000`
